@@ -1,12 +1,20 @@
-import commonjs from "rollup-plugin-commonjs";
-// import nodeResolve from "rollup-plugin-node-resolve";
+import uglify from 'rollup-plugin-uglify';
+import re from 'rollup-plugin-re';
 
 export default {
-	input: "bundle.js",
+	input: 'bundle.js',
 	output: {
-		file: "dist/semver.js",
-		format: "iife"
+		file: 'dist/semver.js',
+		format: 'iife'
 	},
 	name: 'semverCompare',
-	plugins: [commonjs()]
+	plugins: [re({
+		patterns: [{
+			test: /debug\(.+?\);/g,
+			replace: ''
+		}, {
+			test: /^\s*\/\* nomin \*\/.+/gm,
+			replace: ''
+		}]
+	}), uglify()]
 };

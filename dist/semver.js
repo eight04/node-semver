@@ -1,3 +1,6 @@
+var semverCompare = (function () {
+'use strict';
+
 // exports = module.exports = SemVer;
 
 // The debug function is excluded entirely from the minified version.
@@ -16,7 +19,7 @@
 
 // Note: this is the semver.org version of the spec that it implements
 // Not necessarily the package version of this code.
-export var SEMVER_SPEC_VERSION = '2.0.0';
+
 
 var MAX_LENGTH = 256;
 var MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER || 9007199254740991;
@@ -232,43 +235,6 @@ for (var i = 0; i < R; i++) {
     re[i] = new RegExp(src[i]);
 }
 
-export {parse};
-function parse(version, loose) {
-  if (version instanceof SemVer)
-    return version;
-
-  if (typeof version !== 'string')
-    return null;
-
-  if (version.length > MAX_LENGTH)
-    return null;
-
-  var r = loose ? re[LOOSE] : re[FULL];
-  if (!r.test(version))
-    return null;
-
-  try {
-    return new SemVer(version, loose);
-  } catch (er) {
-    return null;
-  }
-}
-
-export {valid};
-function valid(version, loose) {
-  var v = parse(version, loose);
-  return v ? v.version : null;
-}
-
-
-export {clean};
-function clean(version, loose) {
-  var s = parse(version.trim().replace(/^[=v]+/, ''), loose);
-  return s ? s.version : null;
-}
-
-export {SemVer};
-
 function SemVer(version, loose) {
   if (version instanceof SemVer) {
     if (version.loose === loose)
@@ -481,49 +447,6 @@ SemVer.prototype.inc = function(release, identifier) {
   return this;
 };
 
-export {inc};
-function inc(version, release, loose, identifier) {
-  if (typeof(loose) === 'string') {
-    identifier = loose;
-    loose = undefined;
-  }
-
-  try {
-    return new SemVer(version, loose).inc(release, identifier).version;
-  } catch (er) {
-    return null;
-  }
-}
-
-export {diff};
-function diff(version1, version2) {
-  if (eq(version1, version2)) {
-    return null;
-  } else {
-    var v1 = parse(version1);
-    var v2 = parse(version2);
-    if (v1.prerelease.length || v2.prerelease.length) {
-      for (var key in v1) {
-        if (key === 'major' || key === 'minor' || key === 'patch') {
-          if (v1[key] !== v2[key]) {
-            return 'pre'+key;
-          }
-        }
-      }
-      return 'prerelease';
-    }
-    for (var key in v1) {
-      if (key === 'major' || key === 'minor' || key === 'patch') {
-        if (v1[key] !== v2[key]) {
-          return key;
-        }
-      }
-    }
-  }
-}
-
-export {compareIdentifiers};
-
 var numeric = /^[0-9]+$/;
 function compareIdentifiers(a, b) {
   var anum = numeric.test(a);
@@ -541,86 +464,34 @@ function compareIdentifiers(a, b) {
          0;
 }
 
-export {rcompareIdentifiers};
-function rcompareIdentifiers(a, b) {
-  return compareIdentifiers(b, a);
-}
-
-export {major};
-function major(a, loose) {
-  return new SemVer(a, loose).major;
-}
-
-export {minor};
-function minor(a, loose) {
-  return new SemVer(a, loose).minor;
-}
-
-export {patch};
-function patch(a, loose) {
-  return new SemVer(a, loose).patch;
-}
-
-export {compare};
-function compare(a, b, loose) {
+function compare$1(a, b, loose) {
   return new SemVer(a, loose).compare(new SemVer(b, loose));
 }
 
-export {compareLoose};
-function compareLoose(a, b) {
-  return compare(a, b, true);
-}
-
-export {rcompare};
-function rcompare(a, b, loose) {
-  return compare(b, a, loose);
-}
-
-export {sort};
-function sort(list, loose) {
-  return list.sort(function(a, b) {
-    return compare(a, b, loose);
-  });
-}
-
-export {rsort};
-function rsort(list, loose) {
-  return list.sort(function(a, b) {
-    return rcompare(a, b, loose);
-  });
-}
-
-export {gt};
 function gt(a, b, loose) {
-  return compare(a, b, loose) > 0;
+  return compare$1(a, b, loose) > 0;
 }
 
-export {lt};
 function lt(a, b, loose) {
-  return compare(a, b, loose) < 0;
+  return compare$1(a, b, loose) < 0;
 }
 
-export {eq};
 function eq(a, b, loose) {
-  return compare(a, b, loose) === 0;
+  return compare$1(a, b, loose) === 0;
 }
 
-export {neq};
 function neq(a, b, loose) {
-  return compare(a, b, loose) !== 0;
+  return compare$1(a, b, loose) !== 0;
 }
 
-export {gte};
 function gte(a, b, loose) {
-  return compare(a, b, loose) >= 0;
+  return compare$1(a, b, loose) >= 0;
 }
 
-export {lte};
 function lte(a, b, loose) {
-  return compare(a, b, loose) <= 0;
+  return compare$1(a, b, loose) <= 0;
 }
 
-export {cmp};
 function cmp(a, op, b, loose) {
   var ret;
   switch (op) {
@@ -645,7 +516,6 @@ function cmp(a, op, b, loose) {
   return ret;
 }
 
-export {Comparator};
 function Comparator(comp, loose) {
   if (comp instanceof Comparator) {
     if (comp.loose === loose)
@@ -744,7 +614,6 @@ Comparator.prototype.intersects = function(comp, loose) {
 };
 
 
-export {Range};
 function Range(range, loose) {
   if (range instanceof Range) {
     if (range.loose === loose) {
@@ -846,16 +715,6 @@ Range.prototype.intersects = function(range, loose) {
     });
   });
 };
-
-// Mostly just for testing and legacy API reasons
-export {toComparators};
-function toComparators(range, loose) {
-  return new Range(range, loose).set.map(function(comp) {
-    return comp.map(function(c) {
-      return c.value;
-    }).join(' ').trim().split(' ');
-  });
-}
 
 // comprised of xranges, tildes, stars, and gtlt's at this point.
 // already replaced the hyphen ranges
@@ -1139,7 +998,6 @@ function testSet(set, version) {
   return true;
 }
 
-export {satisfies};
 function satisfies(version, range, loose) {
   try {
     range = new Range(range, loose);
@@ -1149,148 +1007,6 @@ function satisfies(version, range, loose) {
   return range.test(version);
 }
 
-export {maxSatisfying};
-function maxSatisfying(versions, range, loose) {
-  var max = null;
-  var maxSV = null;
-  try {
-    var rangeObj = new Range(range, loose);
-  } catch (er) {
-    return null;
-  }
-  versions.forEach(function (v) {
-    if (rangeObj.test(v)) { // satisfies(v, range, loose)
-      if (!max || maxSV.compare(v) === -1) { // compare(max, v, true)
-        max = v;
-        maxSV = new SemVer(max, loose);
-      }
-    }
-  })
-  return max;
-}
+return compare$1;
 
-export {minSatisfying};
-function minSatisfying(versions, range, loose) {
-  var min = null;
-  var minSV = null;
-  try {
-    var rangeObj = new Range(range, loose);
-  } catch (er) {
-    return null;
-  }
-  versions.forEach(function (v) {
-    if (rangeObj.test(v)) { // satisfies(v, range, loose)
-      if (!min || minSV.compare(v) === 1) { // compare(min, v, true)
-        min = v;
-        minSV = new SemVer(min, loose);
-      }
-    }
-  })
-  return min;
-}
-
-export {validRange};
-function validRange(range, loose) {
-  try {
-    // Return '*' instead of '' so that truthiness works.
-    // This will throw if it's invalid anyway
-    return new Range(range, loose).range || '*';
-  } catch (er) {
-    return null;
-  }
-}
-
-// Determine if version is less than all the versions possible in the range
-export {ltr};
-function ltr(version, range, loose) {
-  return outside(version, range, '<', loose);
-}
-
-// Determine if version is greater than all the versions possible in the range.
-export {gtr};
-function gtr(version, range, loose) {
-  return outside(version, range, '>', loose);
-}
-
-export {outside};
-function outside(version, range, hilo, loose) {
-  version = new SemVer(version, loose);
-  range = new Range(range, loose);
-
-  var gtfn, ltefn, ltfn, comp, ecomp;
-  switch (hilo) {
-    case '>':
-      gtfn = gt;
-      ltefn = lte;
-      ltfn = lt;
-      comp = '>';
-      ecomp = '>=';
-      break;
-    case '<':
-      gtfn = lt;
-      ltefn = gte;
-      ltfn = gt;
-      comp = '<';
-      ecomp = '<=';
-      break;
-    default:
-      throw new TypeError('Must provide a hilo val of "<" or ">"');
-  }
-
-  // If it satisifes the range it is not outside
-  if (satisfies(version, range, loose)) {
-    return false;
-  }
-
-  // From now on, variable terms are as if we're in "gtr" mode.
-  // but note that everything is flipped for the "ltr" function.
-
-  for (var i = 0; i < range.set.length; ++i) {
-    var comparators = range.set[i];
-
-    var high = null;
-    var low = null;
-
-    comparators.forEach(function(comparator) {
-      if (comparator.semver === ANY) {
-        comparator = new Comparator('>=0.0.0')
-      }
-      high = high || comparator;
-      low = low || comparator;
-      if (gtfn(comparator.semver, high.semver, loose)) {
-        high = comparator;
-      } else if (ltfn(comparator.semver, low.semver, loose)) {
-        low = comparator;
-      }
-    });
-
-    // If the edge version comparator has a operator then our version
-    // isn't outside it
-    if (high.operator === comp || high.operator === ecomp) {
-      return false;
-    }
-
-    // If the lowest version comparator has an operator and our version
-    // is less than it then it isn't higher than the range
-    if ((!low.operator || low.operator === comp) &&
-        ltefn(version, low.semver)) {
-      return false;
-    } else if (low.operator === ecomp && ltfn(version, low.semver)) {
-      return false;
-    }
-  }
-  return true;
-}
-
-export {prerelease};
-function prerelease(version, loose) {
-  var parsed = parse(version, loose);
-  return (parsed && parsed.prerelease.length) ? parsed.prerelease : null;
-}
-
-export {intersects};
-function intersects(r1, r2, loose) {
-  r1 = new Range(r1, loose)
-  r2 = new Range(r2, loose)
-  return r1.intersects(r2)
-}
+}());

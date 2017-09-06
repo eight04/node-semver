@@ -4,7 +4,8 @@
   "description": "The semantic version parser used by npm.",
   "main": "semver.js",
   "scripts": {
-    "test": "tap test/*.js --cov -J"
+    "test": "tap test/*.js --cov -J",
+	"build": "rollup -c"
   },
   "devDependencies": {
     "rollup": "^0.49.2",

@@ -1,4 +1,4 @@
-// exports = module.exports = SemVer;
+exports = module.exports = SemVer;
 
 // The debug function is excluded entirely from the minified version.
 /* nomin */ var debug;
@@ -16,14 +16,14 @@
 
 // Note: this is the semver.org version of the spec that it implements
 // Not necessarily the package version of this code.
-export var SEMVER_SPEC_VERSION = '2.0.0';
+exports.SEMVER_SPEC_VERSION = '2.0.0';
 
 var MAX_LENGTH = 256;
 var MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER || 9007199254740991;
 
 // The actual regexps go on exports.re
-var re = [];
-var src = [];
+var re = exports.re = [];
+var src = exports.src = [];
 var R = 0;
 
 // The following Regular Expressions can be used for tokenizing,
@@ -232,7 +232,7 @@ for (var i = 0; i < R; i++) {
     re[i] = new RegExp(src[i]);
 }
 
-export {parse};
+exports.parse = parse;
 function parse(version, loose) {
   if (version instanceof SemVer)
     return version;
@@ -254,20 +254,20 @@ function parse(version, loose) {
   }
 }
 
-export {valid};
+exports.valid = valid;
 function valid(version, loose) {
   var v = parse(version, loose);
   return v ? v.version : null;
 }
 
 
-export {clean};
+exports.clean = clean;
 function clean(version, loose) {
   var s = parse(version.trim().replace(/^[=v]+/, ''), loose);
   return s ? s.version : null;
 }
 
-export {SemVer};
+exports.SemVer = SemVer;
 
 function SemVer(version, loose) {
   if (version instanceof SemVer) {
@@ -481,7 +481,7 @@ SemVer.prototype.inc = function(release, identifier) {
   return this;
 };
 
-export {inc};
+exports.inc = inc;
 function inc(version, release, loose, identifier) {
   if (typeof(loose) === 'string') {
     identifier = loose;
@@ -495,7 +495,7 @@ function inc(version, release, loose, identifier) {
   }
 }
 
-export {diff};
+exports.diff = diff;
 function diff(version1, version2) {
   if (eq(version1, version2)) {
     return null;
@@ -522,7 +522,7 @@ function diff(version1, version2) {
   }
 }
 
-export {compareIdentifiers};
+exports.compareIdentifiers = compareIdentifiers;
 
 var numeric = /^[0-9]+$/;
 function compareIdentifiers(a, b) {
@@ -541,86 +541,86 @@ function compareIdentifiers(a, b) {
          0;
 }
 
-export {rcompareIdentifiers};
+exports.rcompareIdentifiers = rcompareIdentifiers;
 function rcompareIdentifiers(a, b) {
   return compareIdentifiers(b, a);
 }
 
-export {major};
+exports.major = major;
 function major(a, loose) {
   return new SemVer(a, loose).major;
 }
 
-export {minor};
+exports.minor = minor;
 function minor(a, loose) {
   return new SemVer(a, loose).minor;
 }
 
-export {patch};
+exports.patch = patch;
 function patch(a, loose) {
   return new SemVer(a, loose).patch;
 }
 
-export {compare};
+exports.compare = compare;
 function compare(a, b, loose) {
   return new SemVer(a, loose).compare(new SemVer(b, loose));
 }
 
-export {compareLoose};
+exports.compareLoose = compareLoose;
 function compareLoose(a, b) {
   return compare(a, b, true);
 }
 
-export {rcompare};
+exports.rcompare = rcompare;
 function rcompare(a, b, loose) {
   return compare(b, a, loose);
 }
 
-export {sort};
+exports.sort = sort;
 function sort(list, loose) {
   return list.sort(function(a, b) {
-    return compare(a, b, loose);
+    return exports.compare(a, b, loose);
   });
 }
 
-export {rsort};
+exports.rsort = rsort;
 function rsort(list, loose) {
   return list.sort(function(a, b) {
-    return rcompare(a, b, loose);
+    return exports.rcompare(a, b, loose);
   });
 }
 
-export {gt};
+exports.gt = gt;
 function gt(a, b, loose) {
   return compare(a, b, loose) > 0;
 }
 
-export {lt};
+exports.lt = lt;
 function lt(a, b, loose) {
   return compare(a, b, loose) < 0;
 }
 
-export {eq};
+exports.eq = eq;
 function eq(a, b, loose) {
   return compare(a, b, loose) === 0;
 }
 
-export {neq};
+exports.neq = neq;
 function neq(a, b, loose) {
   return compare(a, b, loose) !== 0;
 }
 
-export {gte};
+exports.gte = gte;
 function gte(a, b, loose) {
   return compare(a, b, loose) >= 0;
 }
 
-export {lte};
+exports.lte = lte;
 function lte(a, b, loose) {
   return compare(a, b, loose) <= 0;
 }
 
-export {cmp};
+exports.cmp = cmp;
 function cmp(a, op, b, loose) {
   var ret;
   switch (op) {
@@ -645,7 +645,7 @@ function cmp(a, op, b, loose) {
   return ret;
 }
 
-export {Comparator};
+exports.Comparator = Comparator;
 function Comparator(comp, loose) {
   if (comp instanceof Comparator) {
     if (comp.loose === loose)
@@ -744,7 +744,7 @@ Comparator.prototype.intersects = function(comp, loose) {
 };
 
 
-export {Range};
+exports.Range = Range;
 function Range(range, loose) {
   if (range instanceof Range) {
     if (range.loose === loose) {
@@ -848,7 +848,7 @@ Range.prototype.intersects = function(range, loose) {
 };
 
 // Mostly just for testing and legacy API reasons
-export {toComparators};
+exports.toComparators = toComparators;
 function toComparators(range, loose) {
   return new Range(range, loose).set.map(function(comp) {
     return comp.map(function(c) {
@@ -1139,7 +1139,7 @@ function testSet(set, version) {
   return true;
 }
 
-export {satisfies};
+exports.satisfies = satisfies;
 function satisfies(version, range, loose) {
   try {
     range = new Range(range, loose);
@@ -1149,7 +1149,7 @@ function satisfies(version, range, loose) {
   return range.test(version);
 }
 
-export {maxSatisfying};
+exports.maxSatisfying = maxSatisfying;
 function maxSatisfying(versions, range, loose) {
   var max = null;
   var maxSV = null;
@@ -1169,7 +1169,7 @@ function maxSatisfying(versions, range, loose) {
   return max;
 }
 
-export {minSatisfying};
+exports.minSatisfying = minSatisfying;
 function minSatisfying(versions, range, loose) {
   var min = null;
   var minSV = null;
@@ -1189,7 +1189,7 @@ function minSatisfying(versions, range, loose) {
   return min;
 }
 
-export {validRange};
+exports.validRange = validRange;
 function validRange(range, loose) {
   try {
     // Return '*' instead of '' so that truthiness works.
@@ -1201,18 +1201,18 @@ function validRange(range, loose) {
 }
 
 // Determine if version is less than all the versions possible in the range
-export {ltr};
+exports.ltr = ltr;
 function ltr(version, range, loose) {
   return outside(version, range, '<', loose);
 }
 
 // Determine if version is greater than all the versions possible in the range.
-export {gtr};
+exports.gtr = gtr;
 function gtr(version, range, loose) {
   return outside(version, range, '>', loose);
 }
 
-export {outside};
+exports.outside = outside;
 function outside(version, range, hilo, loose) {
   version = new SemVer(version, loose);
   range = new Range(range, loose);
@@ -1282,13 +1282,13 @@ function outside(version, range, hilo, loose) {
   return true;
 }
 
-export {prerelease};
+exports.prerelease = prerelease;
 function prerelease(version, loose) {
   var parsed = parse(version, loose);
   return (parsed && parsed.prerelease.length) ? parsed.prerelease : null;
 }
 
-export {intersects};
+exports.intersects = intersects;
 function intersects(r1, r2, loose) {
   r1 = new Range(r1, loose)
   r2 = new Range(r2, loose)

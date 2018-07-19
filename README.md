@@ -1,3 +1,5 @@
+**Deprecated. Use [openstyles/semver-bundle](https://github.com/openstyles/semver-bundle) instead.**
+
 This repository bundles node-semver to a single `semverCompare(a, b)` function. You can find the bundle at `dist/semver.js`.
 
 Usage:
